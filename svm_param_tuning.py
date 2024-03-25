@@ -16,7 +16,7 @@ data = df.to_numpy()
 X_train = data[:, 0:-1]
 y_train = data[:, -1]
 
-# Load test data from kaggle website
+# Load test data
 df_test = pd.read_csv('./Data/test.csv')
 data_test = df_test.to_numpy()
 X_test = data_test[:, 0:-1]
@@ -40,7 +40,7 @@ if input("Randomize test data? (y/n): ") == 'y':
                                                         "Enter test ratio: ")))
 
 # Validation curve for C
-param_range = np.logspace(-1, 5, 10)
+param_range = np.logspace(1, 2, 10)
 display = ValidationCurveDisplay.from_estimator(
     SVC(), X_train, y_train, param_name="C",
     param_range=param_range

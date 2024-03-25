@@ -14,7 +14,7 @@ data = df.to_numpy()
 X_train = data[:, 0:-1]
 y_train = data[:, -1]
 
-# Load test data from kaggle website
+# Load test data
 df_test = pd.read_csv('./Data/test.csv')
 data_test = df_test.to_numpy()
 X_test = data_test[:, 0:-1]

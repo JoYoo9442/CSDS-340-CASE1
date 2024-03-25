@@ -16,7 +16,7 @@ data = df.to_numpy()
 X = data[:, 0:-1]
 y = data[:, -1]
 
-# Load test data from kaggle website
+# Load test data
 df_test = pd.read_csv('./Data/test.csv')
 data_test = df_test.to_numpy()
 X_apple = data_test[:, 0:-1]
