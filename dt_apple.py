@@ -17,7 +17,7 @@ X = data[:, 0:-1]
 y = data[:, -1]
 
 # Load test data from kaggle website
-df_test = pd.read_csv('./Data/test1.csv')
+df_test = pd.read_csv('./Data/test.csv')
 data_test = df_test.to_numpy()
 X_apple = data_test[:, 0:-1]
 y_apple = data_test[:, -1]
@@ -28,27 +28,10 @@ y_all = np.concatenate((y, y_apple), axis=0)
 
 # Standardize the test data
 scaler = StandardScaler()
-scaler.fit(X_all)
+scaler.fit(X)
 X_apple = scaler.transform(X_apple)
-
 # Standardize the data
 X = scaler.transform(X)
-
-
-
-# Load the dataset
-df = pd.read_csv('./Data/train.csv')
-data = df.to_numpy()
-X = data[:, 0:-1]
-y = data[:, -1]
-
-# Standardize the data
-scaler = StandardScaler()
-X = scaler.fit_transform(X)
-
-# Split the test data into training and testing set
-X_train, X_test, y_train, y_test = train_test_split(X, y,
-                                                    test_size=0.2)
 
 # Plot a validation curve to tune the hyperparmeter max_depth
 decision_tree = DecisionTreeClassifier()
@@ -62,14 +45,14 @@ plt.show()
 model = DecisionTreeClassifier(criterion = 'entropy', max_depth = 11, random_state = 1)
 
 # Train the model
-model.fit(X_train, y_train)
+model.fit(X, y)
 
 # Output the model
 print(model.feature_importances_)
 
 # Test the model
-y_pred = model.predict(X_test)
-print(accuracy_score(y_test, y_pred))
+y_pred = model.predict(X_apple)
+print(accuracy_score(y_apple, y_pred))
 
 
 
@@ -78,18 +61,18 @@ pca = PCA(n_components=2)
 pca_model = DecisionTreeClassifier(criterion = 'entropy', max_depth = 11, random_state = 1)
 
 # Dimensionality reduction
-X_train_pca = pca.fit_transform(X_train)
-X_test_pca = pca.transform(X_test)
+X_train_pca = pca.fit_transform(X_all)
+X_test_pca = pca.transform(X_apple)
 
 # fitting the logistic regression model on the reduced dataset
-pca_model.fit(X_train_pca, y_train)
+pca_model.fit(X_train_pca, y_all)
 
 # Output the model
 print(pca_model.feature_importances_)
 
 # Test the model
 y_pred = pca_model.predict(X_test_pca)
-print(accuracy_score(y_test, y_pred))
+print(accuracy_score(y_apple, y_pred))
 
 
 
