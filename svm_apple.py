@@ -24,6 +24,8 @@ y_test = data_test[:, -1]
 # Standardize the data
 scaler = MinMaxScaler()
 X_train = scaler.fit_transform(X_train)
+smote = SMOTE(random_state=42)
+X_train, y_train = smote.fit_resample(X_train, y_train)
 
 # Standardize the test data
 X_test = scaler.transform(X_test)
