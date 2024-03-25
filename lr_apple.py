@@ -9,55 +9,43 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
 
 # Load the dataset
 df = pd.read_csv('./Data/train.csv')
+# df = df.drop(columns=['Weight', 'Crunchiness', 'Acidity'])
 data = df.to_numpy()
-X = data[:, 0:-1]
-y = data[:, -1]
+X_train = data[:, 0:-1]
+y_train = data[:, -1]
 
 # Load test data from kaggle website
-df_test = pd.read_csv('./Data/apple_quality.csv')
-df_test.Quality = df_test.Quality.map({'good': 1, 'bad': 0})
+df_test = pd.read_csv('./Data/test.csv')
 data_test = df_test.to_numpy()
-X_apple = data_test[:, 1:-1]
-y_apple = data_test[:, -1]
+X_test = data_test[:, 0:-1]
+y_test = data_test[:, -1]
 
-# Normalize the data
-robust_scaler = RobustScaler()
-standard_scaler = StandardScaler()
-norm_scaler = MinMaxScaler()
-X = robust_scaler.fit_transform(X)
-X = standard_scaler.fit_transform(X)
-X = norm_scaler.fit_transform(X)
+# Standardize the data
+scaler = MinMaxScaler()
+X_train = scaler.fit_transform(X_train)
 
-# # Sequential Feature Selection
-# sbs = SequentialFeatureSelector(
-#         LogisticRegression(penalty='l1', solver='liblinear', C=0.05),
-#         direction='forward')
-# sbs.fit(X, y)
-# X = sbs.transform(X)
+# Standardize the test data
+X_test = scaler.transform(X_test)
 
-# # Normalize the test data
-robust_scaler = RobustScaler()
-standard_scaler = StandardScaler()
-norm_scaler = MinMaxScaler()
-X_apple = robust_scaler.fit_transform(X_apple)
-X_apple = standard_scaler.fit_transform(X_apple)
-X_apple = norm_scaler.fit_transform(X_apple)
-# X_apple = sbs.transform(X_apple)
+# Combine the training and test data
+X_all = np.concatenate((X_train, X_test), axis=0)
+y_all = np.concatenate((y_train, y_test), axis=0)
 
 # Split the test data into training and testing set
-X_train, X_test, y_train, y_test = train_test_split(X_apple, y_apple,
-                                                    test_size=0.8)
-
-# Dont need to split the data into training and testing set
+if input("Randomize test data? (y/n): ") == 'y':
+    test_size = input("Enter test ratio: ")
+    if test_size == '':
+        test_size = 0.2
+    else:
+        test_size = float(test_size)
+    X_not, X_test, y_not, y_test = train_test_split(X_all, y_all,
+                                                    test_size=test_size)
 
 # Create the model
-model = LogisticRegression(penalty='l1', solver='liblinear', C=0.05)
+model = LogisticRegression(penalty='l2', C=0.05)
 
 # Train the model
-model.fit(X, y)
-
-# Output the model
-print(model.coef_)
+model.fit(X_train, y_train)
 
 # Test the model
 y_pred = model.predict(X_test)

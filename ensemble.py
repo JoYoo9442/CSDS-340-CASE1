@@ -1,12 +1,13 @@
-# SVM model for apple quality dataset
+# Ensembling Techniques
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
-from sklearn.preprocessing import normalize
-from imblearn.over_sampling import SMOTE
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import VotingClassifier
+from sklearn.linear_model import LogisticRegression
 
 # Load the dataset
 df = pd.read_csv('./Data/train.csv')
@@ -42,14 +43,21 @@ if input("Randomize test data? (y/n): ") == 'y':
     X_not, X_test, y_not, y_test = train_test_split(X_all, y_all,
                                                     test_size=test_size)
 
-# Create the model
-model = SVC(C=19, gamma='scale', kernel='rbf')
+model1 = DecisionTreeClassifier(criterion='entropy',
+                                max_depth=11,
+                                random_state=42)
+model2 = SVC(C=19, gamma='scale', kernel='rbf',
+             probability=True, random_state=42)
 
-# Train the model
-model.fit(X_train, y_train)
+# Create the ensemble model
+combined = VotingClassifier(estimators=[('dt', model1), ('svm', model2)],
+                            voting='soft', weights=[1, 10])
 
-# Test the model
-y_pred = model.predict(X_test)
+# Train the models
+model1.fit(X_train, y_train)
+model2.fit(X_train, y_train)
+combined.fit(X_train, y_train)
 
-# Output the model
-print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
+# Predict the test data
+y_pred = combined.predict(X_test)
+print("Accuracy: ", accuracy_score(y_test, y_pred))
