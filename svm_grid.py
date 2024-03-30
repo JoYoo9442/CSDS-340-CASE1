@@ -1,12 +1,13 @@
-# SVM model for apple quality dataset
+# Grid Search for SVM hyperparameter tuning
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
-from sklearn.preprocessing import normalize
-from imblearn.over_sampling import SMOTE
+from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
+from sklearn.model_selection import ValidationCurveDisplay
+import matplotlib.pyplot as plt
 
 # Load the dataset
 df = pd.read_csv('./Data/train.csv')
@@ -15,20 +16,19 @@ data = df.to_numpy()
 X_train = data[:, 0:-1]
 y_train = data[:, -1]
 
-# Standardize the data
+# Normalize the data
 scaler = MinMaxScaler()
 X_train = scaler.fit_transform(X_train)
 
-X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=0.2)
+# Grid Search
+param_grid = {
+    'C': [0.1, 1, 10, 100],
+    'gamma': [1, 0.1, 0.01, 'scale', 'auto']
+}
 
-# Create the model
-model = SVC(C=19, gamma='scale', kernel='rbf')
+grid = GridSearchCV(SVC(kernel='rbf'), param_grid,
+                    cv=5, scoring='accuracy')
 
-# Train the model
-model.fit(X_train, y_train)
+grid.fit(X_train, y_train)
 
-# Test the model
-y_pred = model.predict(X_test)
-
-# Output the model
-print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
+print("Best parameters: ", grid.best_params_)

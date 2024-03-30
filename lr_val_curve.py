@@ -25,7 +25,7 @@ X = scaler.fit_transform(X)
 
 # Plot the validation curve
 display = ValidationCurveDisplay.from_estimator(
-        LogisticRegression(penalty='l1', solver="liblinear"),
+        LogisticRegression(penalty='l2'),
         X, y,
         param_name='C',
         param_range=np.logspace(-3, 10, 100))

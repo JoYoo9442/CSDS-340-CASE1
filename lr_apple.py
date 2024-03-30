@@ -27,22 +27,12 @@ X_train = scaler.fit_transform(X_train)
 # Standardize the test data
 X_test = scaler.transform(X_test)
 
-# Combine the training and test data
-X_all = np.concatenate((X_train, X_test), axis=0)
-y_all = np.concatenate((y_train, y_test), axis=0)
-
-# Split the test data into training and testing set
-if input("Randomize test data? (y/n): ") == 'y':
-    test_size = input("Enter test ratio: ")
-    if test_size == '':
-        test_size = 0.2
-    else:
-        test_size = float(test_size)
-    X_not, X_test, y_not, y_test = train_test_split(X_all, y_all,
-                                                    test_size=test_size)
+X_train, X_test, y_train, y_test = train_test_split(X_train, y_train,
+                                                    test_size=0.2,
+                                                    random_state=42)
 
 # Create the model
-model = LogisticRegression(penalty='l2', C=0.05)
+model = LogisticRegression(penalty='l2', C=.05)
 
 # Train the model
 model.fit(X_train, y_train)
